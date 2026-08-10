@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Jack's Escape: Jodhpur Zombie Outbreak</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,7 +28,7 @@
 
       <div class="hud-item">
         <div class="hud-header">
-          <span class="label">⚡ STAMINA (SHIFT TO SPRINT)</span>
+          <span class="label">⚡ STAMINA</span>
           <span id="staminaText" class="value-text">100 / 100</span>
         </div>
         <div class="bar-container">
@@ -94,14 +94,14 @@
       <div class="prompt-box">
         <div class="prompt-icon">⚠️</div>
         <div class="prompt-text">CAR ENGINE OVERHEATED!</div>
-        <button id="exitCarBtn" class="btn btn-action pulse">PRESS [E] TO EXIT CAR</button>
+        <button id="exitCarBtn" class="btn btn-action pulse">TAP TO EXIT CAR</button>
       </div>
     </div>
 
     <!-- DIALOGUE / SUBTITLE OVERLAY -->
     <div id="dialogueContainer" class="dialogue-box hidden">
       <div id="dialogueText" class="dialogue-text">"Driving down Rajasthan highway..."</div>
-      <div class="dialogue-hint">Click or Press [SPACE] to Continue</div>
+      <div class="dialogue-hint">Tap Screen or Press [SPACE] to Continue</div>
     </div>
 
     <!-- TITLE / MAIN MENU SCREEN -->
@@ -116,20 +116,12 @@
 
           <div class="info-grid">
             <div class="info-card">
-              <h4>🔦 BRIGHT TORCH</h4>
-              <p>Auto-aims with mouse flashlight cone. Hold <strong>[SHIFT]</strong> to Sprint.</p>
+              <h4>📱 PHONE & PC CONTROLS</h4>
+              <p>On Phone: Use Touch D-Pad & Fire buttons. On PC: WASD & Mouse.</p>
             </div>
             <div class="info-card">
               <h4>🔫 WEAPONS & CRATES</h4>
-              <p>Keys <strong>[1]</strong> Crowbar, <strong>[2]</strong> Pistol, <strong>[3]</strong> Shotgun, <strong>[4]</strong> AK-47.</p>
-            </div>
-            <div class="info-card">
-              <h4>💊 HEALTH CRATES</h4>
-              <p>Pick up Medkits on the street to restore +50 HP.</p>
-            </div>
-            <div class="info-card">
-              <h4>🏰 ESCAPE GOAL</h4>
-              <p>Survive 8 Zombie Waves & walk 5000m to Mehrangarh Fort Entrance Gate!</p>
+              <p>Crowbar, Pistol, Shotgun, AK-47 & Medkits dropped on street.</p>
             </div>
           </div>
         </div>
@@ -173,11 +165,24 @@
       </div>
     </div>
 
-    <!-- TOUCH CONTROLS FOR MOBILE -->
-    <div id="touchControls">
-      <div id="btnSprint" class="touch-btn">⚡ SPRINT</div>
-      <div id="btnSwitch" class="touch-btn">🔄 WEAPON</div>
-      <div id="btnShoot" class="touch-btn shoot-btn">🔥 FIRE</div>
+    <!-- ON-SCREEN MOBILE TOUCH CONTROLS (D-PAD MOVEMENT + ACTION BUTTONS) -->
+    <div id="touchControls" class="mobile-controls">
+      <!-- Left Side: Touch Movement D-Pad -->
+      <div class="dpad-container">
+        <button id="btnUp" class="dpad-btn dpad-up">⬆️</button>
+        <div class="dpad-row">
+          <button id="btnLeft" class="dpad-btn dpad-left">⬅️</button>
+          <button id="btnDown" class="dpad-btn dpad-down">⬇️</button>
+          <button id="btnRight" class="dpad-btn dpad-right">➡️</button>
+        </div>
+      </div>
+
+      <!-- Right Side: Action Buttons -->
+      <div class="action-btn-group">
+        <button id="btnSprint" class="touch-action-btn btn-sprint">⚡ SPRINT</button>
+        <button id="btnSwitch" class="touch-action-btn btn-switch">🔄 WEAPON</button>
+        <button id="btnShoot" class="touch-action-btn btn-shoot">🔥 FIRE</button>
+      </div>
     </div>
 
   </div>

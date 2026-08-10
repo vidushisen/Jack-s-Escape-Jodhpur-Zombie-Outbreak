@@ -1,4 +1,4 @@
-/* JODHPUR ZOMBIE OUTBREAK - SEAMLESS GLASSMORPHIC STYLES */
+/* JODHPUR ZOMBIE OUTBREAK - SEAMLESS GLASSMORPHIC STYLES & MOBILE TOUCH LAYOUT */
 
 :root {
   --primary-blue: #0284c7;
@@ -16,6 +16,7 @@
   margin: 0;
   padding: 0;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body, html {
@@ -25,6 +26,7 @@ body, html {
   background-color: #020617;
   font-family: 'Rajdhani', sans-serif;
   color: #f8fafc;
+  touch-action: none;
 }
 
 #gameContainer {
@@ -546,33 +548,132 @@ canvas#gameCanvas {
   cursor: pointer;
 }
 
-/* ANIMATIONS & TOUCH CONTROLS */
-.pulse { animation: pulseBtn 1.2s infinite alternate; }
-@keyframes pulseBtn { 0% { transform: scale(0.98); } 100% { transform: scale(1.03); } }
-
+/* --- TOUCH CONTROLS (DEFAULT HIDDEN ON DESKTOP/LAPTOP) --- */
 #touchControls {
-  display: none;
+  display: none !important;
   position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  gap: 12px;
-  z-index: 25;
+  bottom: 14px;
+  left: 0;
+  right: 0;
+  padding: 0 16px;
+  justify-content: space-between;
+  align-items: flex-end;
+  z-index: 30;
+  pointer-events: none;
 }
 
-.touch-btn {
-  background: rgba(2, 132, 199, 0.85);
+.dpad-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.dpad-row {
+  display: flex;
+  gap: 8px;
+}
+
+.dpad-btn {
+  width: 52px;
+  height: 52px;
+  background: rgba(9, 13, 22, 0.85);
   border: 2px solid var(--neon-cyan);
   color: #ffffff;
-  padding: 12px 20px;
-  border-radius: 30px;
-  font-weight: 900;
-  font-size: 16px;
+  font-size: 20px;
+  border-radius: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+  touch-action: manipulation;
 }
 
-.touch-btn.shoot-btn {
+.dpad-btn:active {
+  background: var(--primary-blue);
+  transform: scale(0.92);
+}
+
+.action-btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.touch-action-btn {
+  padding: 12px 22px;
+  background: rgba(9, 13, 22, 0.88);
+  border: 2px solid var(--accent-gold);
+  color: #ffffff;
+  border-radius: 25px;
+  font-weight: 900;
+  font-size: 15px;
+  box-shadow: 0 0 15px rgba(250, 204, 21, 0.4);
+  touch-action: manipulation;
+}
+
+.touch-action-btn.btn-shoot {
   background: linear-gradient(135deg, #ef4444, #b91c1c);
   border-color: #fef08a;
+  font-size: 17px;
+  padding: 14px 28px;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.7);
+}
+
+.touch-action-btn:active {
+  transform: scale(0.94);
+}
+
+/* TOUCH CONTROLS DISPLAYED EXCLUSIVELY ON MOBILE TOUCH SCREENS */
+@media (hover: none) and (pointer: coarse), (max-width: 768px) {
+  #touchControls {
+    display: flex !important;
+  }
+
+  #hud {
+    width: 220px;
+    top: 10px;
+    left: 10px;
+    padding: 10px 12px;
+  }
+
+  #rightHud {
+    top: 10px;
+    right: 10px;
+  }
+
+  .distance-board-card {
+    width: 200px;
+    padding: 10px 12px;
+  }
+
+  .distance-value {
+    font-size: 22px;
+  }
+
+  #killsHud {
+    bottom: 125px;
+    left: 10px;
+  }
+
+  .kills-board-card {
+    min-width: 130px;
+    padding: 8px 12px;
+  }
+
+  .kills-value {
+    font-size: 26px;
+  }
+
+  #miniMapCard {
+    bottom: 125px;
+    right: 10px;
+  }
+
+  .game-title {
+    font-size: 32px;
+  }
 }
 
 .hidden { display: none !important; }

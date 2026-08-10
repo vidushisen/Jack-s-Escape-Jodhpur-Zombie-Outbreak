@@ -1,6 +1,6 @@
 /**
  * Main Game Controller & State Machine for Jack's Escape: Jodhpur Zombie Outbreak
- * Guarantees SUV Car Drives Smoothly on Start/Restart & Dynamic Color Bars are 100% Visible
+ * Features Full Mobile Touch D-Pad Movement & Phone Responsive Layout
  */
 
 const STATE = {
@@ -23,6 +23,7 @@ class Game {
     // Input States
     this.keys = {};
     this.mouse = { x: 0, y: 0, isDown: false };
+    this.isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
     // Game Objects
     this.player = new Player(100, 280);
@@ -120,15 +121,30 @@ class Game {
       this.mouse.isDown = false;
     });
 
-    const btnSprint = document.getElementById('btnSprint');
-    if (btnSprint) {
-      btnSprint.addEventListener('touchstart', (e) => { e.preventDefault(); this.keys['Shift'] = true; });
-      btnSprint.addEventListener('touchend', (e) => { e.preventDefault(); this.keys['Shift'] = false; });
-    }
+    // --- ON-SCREEN MOBILE TOUCH CONTROLS BINDING ---
+    const bindTouchBtn = (btnId, keyName) => {
+      const el = document.getElementById(btnId);
+      if (!el) return;
+      el.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        this.keys[keyName] = true;
+      });
+      el.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        this.keys[keyName] = false;
+      });
+    };
+
+    bindTouchBtn('btnUp', 'w');
+    bindTouchBtn('btnDown', 's');
+    bindTouchBtn('btnLeft', 'a');
+    bindTouchBtn('btnRight', 'd');
+    bindTouchBtn('btnSprint', 'Shift');
 
     const btnSwitch = document.getElementById('btnSwitch');
     if (btnSwitch) {
-      btnSwitch.addEventListener('click', () => {
+      btnSwitch.addEventListener('touchstart', (e) => {
+        e.preventDefault();
         if (this.player.isInCar) return;
         let nextIdx = (this.player.activeWeaponIndex + 1) % this.player.weapons.length;
         while (!this.player.weapons[nextIdx].unlocked) {
@@ -145,9 +161,18 @@ class Game {
       btnShoot.addEventListener('touchstart', (e) => {
         e.preventDefault();
         this.mouse.isDown = true;
-        if (!this.player.isInCar) this.handlePlayerAttack();
+        if (this.canExitCar) {
+          this.exitCar();
+        } else if (this.currentDialogue) {
+          this.nextDialogue();
+        } else if (!this.player.isInCar) {
+          this.handlePlayerAttack();
+        }
       });
-      btnShoot.addEventListener('touchend', (e) => { e.preventDefault(); this.mouse.isDown = false; });
+      btnShoot.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        this.mouse.isDown = false;
+      });
     }
   }
 
@@ -423,7 +448,7 @@ class Game {
     ctx.fill();
   }
 
-  // --- DYNAMIC COLOR HUD UPDATE (GREEN > 60%, ORANGE 30-60%, RED < 30%) ---
+  // --- DYNAMIC COLOR HUD UPDATE ---
   updatePlayerHUD() {
     if (!this.player) return;
 
@@ -470,7 +495,7 @@ class Game {
   // --- DYNAMIC COLOR DISTANCE HUD UPDATE ---
   updateDistanceHUD() {
     const rawPct = (this.distance / 5000) * 100;
-    const barPct = Math.max(5, Math.min(100, rawPct)); // Minimum 5% width so colored bar is ALWAYS 100% visible!
+    const barPct = Math.max(5, Math.min(100, rawPct));
 
     const distEl = document.getElementById('distanceBar');
     const distTextEl = document.getElementById('distanceText');
@@ -516,6 +541,23 @@ class Game {
 
     // 2. Phase 2 & 3: Walking & Zombie Outbreak Update
     if ((this.state === STATE.WALKING || this.state === STATE.AMBUSH) && !this.player.isInCar) {
+
+      // On Mobile Touch Devices: Auto-Aim Flashlight at Nearest Zombie
+      if (this.isTouchDevice && this.zombies.length > 0) {
+        let nearestZ = this.zombies[0];
+        let minDist = Infinity;
+        for (let z of this.zombies) {
+          const d = Math.hypot(z.x - this.player.x, z.y - this.player.y);
+          if (d < minDist) {
+            minDist = d;
+            nearestZ = z;
+          }
+        }
+        if (nearestZ && minDist < 450) {
+          this.player.angle = Math.atan2(nearestZ.y - this.player.y, nearestZ.x - this.player.x);
+        }
+      }
+
       this.player.update(this.keys, this.mouse, this.engine.camera);
       this.engine.updateCamera(this.player.x, this.player.y);
 
@@ -544,7 +586,7 @@ class Game {
         this.handlePlayerAttack();
       }
 
-      // --- 20-SECOND INTERMISSION BETWEEN WAVES (NO COUNTDOWN TIMER DISPLAYED) ---
+      // --- 20-SECOND INTERMISSION BETWEEN WAVES ---
       if (this.isWaveResting) {
         this.showWaveBanner(
           `WAVE ${this.currentWave} CLEARED!`,
@@ -586,13 +628,13 @@ class Game {
           }
         }
 
-        // WAVE CLEARED -> 20 SECONDS INTERMISSION REST (WITHOUT COUNTDOWN TIMER DISPLAYED!)
+        // WAVE CLEARED -> 20 SECONDS INTERMISSION REST
         if (this.zombiesKilledInWave >= this.zombiesInWave && this.zombies.length === 0) {
           if (this.currentWave < this.maxWaves) {
             audio.playWaveClear();
 
             this.isWaveResting = true;
-            this.restEndTime = Date.now() + 20000; // 20 Seconds Rest!
+            this.restEndTime = Date.now() + 20000;
 
             this.pickups.push(new Pickup(this.player.x + 80, 260, 'health'));
             this.pickups.push(new Pickup(this.player.x - 80, 300, 'health'));
@@ -696,7 +738,7 @@ class Game {
         this.gameOverScreen.classList.remove('hidden');
       }
 
-      // VICTORY SCREEN -> TRIGGERS WHEN WALKING INTO MEHRANGARH FORT GATE AT ABSOLUTE END (X >= 39800 or 5000m)!
+      // VICTORY SCREEN -> TRIGGERS WHEN WALKING INTO MEHRANGARH FORT GATE AT ABSOLUTE END!
       if ((this.player.x >= 39800 || this.distance >= 5000) && this.state !== STATE.VICTORY) {
         this.state = STATE.VICTORY;
         document.getElementById('winKills').innerText = this.kills;
@@ -724,6 +766,7 @@ class Game {
     for (let i = 1; i <= 4; i++) {
       const btn = document.getElementById(`w${i}`);
       const weaponObj = this.player.weapons[i - 1];
+      if (!btn || !weaponObj) continue;
       if (weaponObj.unlocked) {
         btn.classList.remove('locked');
       } else {
