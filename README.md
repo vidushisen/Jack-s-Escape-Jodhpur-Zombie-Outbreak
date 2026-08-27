@@ -49,11 +49,11 @@ Jack-s-Escape-Jodhpur-Zombie-Outbreak/
     ├── entities.js
     └── game.js
 🚀 How to Play Locally
-Clone the Repository: git clone https://github.com/vidushisen/Jack-s-Escape-Jodhpur-Zombie-Outbreak.git
+Clone the Repository: git clone https://github.com/vidushisen/Jack-s-Escape-Jodhpur-Zombie-Outbreak.git   
 
 Double click index.html in any browser or run with Python: python -m http.server 8080
 
 Visit http://localhost:8080 in your browser.
 
 📄 License
-This project is open-source under the MIT License.
+This project is open-source under the MIT License.        
